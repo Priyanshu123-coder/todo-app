@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -73,67 +73,42 @@
       <div class="subtitle">Stay focused. Ship it.</div>
       <div class="date-tag" id="dateTag"></div>
     </div>
-
     <div class="stats">
-      <div class="stat s1">
-        <div class="stat-num" id="totalCount">0</div>
-        <div class="stat-label">Total</div>
-      </div>
-      <div class="stat s2">
-        <div class="stat-num" id="doneCount">0</div>
-        <div class="stat-label">Done</div>
-      </div>
-      <div class="stat s3">
-        <div class="stat-num" id="pendCount">0</div>
-        <div class="stat-label">Pending</div>
-      </div>
+      <div class="stat s1"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+      <div class="stat s2"><div class="stat-num" id="doneCount">0</div><div class="stat-label">Done</div></div>
+      <div class="stat s3"><div class="stat-num" id="pendCount">0</div><div class="stat-label">Pending</div></div>
     </div>
-
     <div class="progress-wrap">
-      <div class="prog-label">
-        <span>Today's progress</span>
-        <span id="pct">0%</span>
-      </div>
-      <div class="prog-track">
-        <div class="prog-fill" id="progFill" style="width:0%"></div>
-      </div>
+      <div class="prog-label"><span>Today's progress</span><span id="pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
     </div>
-
     <div class="input-area">
       <input class="todo-input" id="todoInput" placeholder="Add a new task..." />
       <button class="add-btn" id="addBtn">+ Add</button>
     </div>
-
     <div class="priority-bar">
       <span class="p-label">Priority:</span>
       <button class="p-btn sel-high" data-p="high">High</button>
       <button class="p-btn" data-p="med">Medium</button>
       <button class="p-btn" data-p="low">Low</button>
     </div>
-
     <div class="filters">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="active">Pending</button>
       <button class="filter-btn" data-filter="done">Done</button>
     </div>
-
     <div class="todo-list" id="todoList"></div>
   </div>
-
   <script>
     let todos = JSON.parse(localStorage.getItem('ps_todos') || '[]');
     let filter = 'all';
     let selPriority = 'high';
-
     const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const now = new Date();
     document.getElementById('dateTag').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
-
     const dotClass = { high: 'p-high', med: 'p-med', low: 'p-low' };
-
     function save() { localStorage.setItem('ps_todos', JSON.stringify(todos)); }
-
     function updateStats() {
       const total = todos.length;
       const done = todos.filter(t => t.done).length;
@@ -144,7 +119,6 @@
       document.getElementById('pct').textContent = pct + '%';
       document.getElementById('progFill').style.width = pct + '%';
     }
-
     function render() {
       const list = document.getElementById('todoList');
       const filtered = todos.filter(t => filter === 'all' ? true : filter === 'done' ? t.done : !t.done);
@@ -165,10 +139,8 @@
       }
       updateStats();
     }
-
     function toggle(i) { todos[i].done = !todos[i].done; save(); render(); }
     function remove(i) { todos.splice(i, 1); save(); render(); }
-
     document.querySelectorAll('.p-btn').forEach(btn => {
       btn.onclick = () => {
         selPriority = btn.dataset.p;
@@ -176,7 +148,6 @@
         btn.classList.add('sel-' + selPriority);
       };
     });
-
     document.getElementById('addBtn').onclick = () => {
       const val = document.getElementById('todoInput').value.trim();
       if (!val) return;
@@ -184,11 +155,9 @@
       document.getElementById('todoInput').value = '';
       save(); render();
     };
-
     document.getElementById('todoInput').addEventListener('keydown', e => {
       if (e.key === 'Enter') document.getElementById('addBtn').click();
     });
-
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.onclick = () => {
         filter = btn.dataset.filter;
@@ -197,7 +166,6 @@
         render();
       };
     });
-
     render();
   </script>
 </body>
