@@ -1,0 +1,172 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Priyanshu's Todo App</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 40px 16px; min-height: 100vh; }
+    .app { max-width: 520px; width: 100%; }
+    .header-band { background: #1D9E75; border-radius: 14px; padding: 1.5rem 1.5rem 1.25rem; margin-bottom: 1.25rem; }
+    .greeting { font-size: 12px; color: #9FE1CB; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .title { font-size: 26px; font-weight: 600; color: #E1F5EE; }
+    .subtitle { font-size: 13px; color: #5DCAA5; margin-top: 3px; }
+    .date-tag { display: inline-block; margin-top: 10px; background: #085041; color: #9FE1CB; font-size: 11px; padding: 4px 10px; border-radius: 20px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .stat { border-radius: 10px; padding: 14px; }
+    .stat.s1 { background: #EEEDFE; }
+    .stat.s2 { background: #E1F5EE; }
+    .stat.s3 { background: #FAEEDA; }
+    .stat-num { font-size: 24px; font-weight: 600; }
+    .stat.s1 .stat-num { color: #3C3489; }
+    .stat.s2 .stat-num { color: #085041; }
+    .stat.s3 .stat-num { color: #633806; }
+    .stat-label { font-size: 12px; margin-top: 2px; }
+    .stat.s1 .stat-label { color: #534AB7; }
+    .stat.s2 .stat-label { color: #0F6E56; }
+    .stat.s3 .stat-label { color: #854F0B; }
+    .progress-wrap { margin-bottom: 1.25rem; }
+    .prog-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 6px; }
+    .prog-track { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+    .prog-fill { height: 100%; background: #1D9E75; border-radius: 3px; transition: width 0.35s ease; }
+    .input-area { display: flex; gap: 8px; margin-bottom: 1rem; }
+    .todo-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; font-family: 'Segoe UI', sans-serif; background: #fff; color: #333; }
+    .todo-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.12); }
+    .add-btn { padding: 10px 20px; background: #1D9E75; color: #E1F5EE; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500; }
+    .add-btn:hover { background: #0F6E56; }
+    .priority-bar { display: flex; gap: 6px; margin-bottom: 1rem; align-items: center; }
+    .p-label { font-size: 12px; color: #888; margin-right: 4px; }
+    .p-btn { padding: 5px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #888; font-family: 'Segoe UI', sans-serif; }
+    .p-btn.sel-high { background: #FAECE7; border-color: #F0997B; color: #712B13; }
+    .p-btn.sel-med { background: #FAEEDA; border-color: #EF9F27; color: #633806; }
+    .p-btn.sel-low { background: #E1F5EE; border-color: #5DCAA5; color: #085041; }
+    .filters { display: flex; gap: 6px; margin-bottom: 1rem; }
+    .filter-btn { padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 12px; cursor: pointer; background: #fff; color: #888; font-family: 'Segoe UI', sans-serif; }
+    .filter-btn.active { background: #E1F5EE; border-color: #5DCAA5; color: #085041; font-weight: 500; }
+    .todo-list { display: flex; flex-direction: column; gap: 8px; }
+    .todo-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; background: #fff; border: 1px solid #eee; border-left: 3px solid #5DCAA5; border-radius: 0 12px 12px 0; }
+    .todo-item:hover { border-left-color: #1D9E75; }
+    .todo-item.done { border-left-color: #AFA9EC; opacity: 0.6; }
+    .check-box { width: 20px; height: 20px; border: 1.5px solid #5DCAA5; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .check-box.checked { background: #534AB7; border-color: #534AB7; }
+    .check-icon { color: white; font-size: 13px; display: none; }
+    .check-box.checked .check-icon { display: block; }
+    .priority-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .p-high { background: #D85A30; }
+    .p-med { background: #BA7517; }
+    .p-low { background: #1D9E75; }
+    .todo-text { flex: 1; font-size: 14px; color: #333; cursor: pointer; }
+    .todo-item.done .todo-text { text-decoration: line-through; color: #aaa; }
+    .del-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 16px; padding: 2px; opacity: 0; }
+    .todo-item:hover .del-btn { opacity: 1; color: #ff5c5c; }
+    .empty { text-align: center; padding: 3rem 1rem; color: #aaa; }
+    .empty i { font-size: 36px; display: block; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header-band">
+      <div class="greeting">Personal workspace</div>
+      <div class="title">Priyanshu Singh</div>
+      <div class="subtitle">Stay focused. Ship it.</div>
+      <div class="date-tag" id="dateTag"></div>
+    </div>
+    <div class="stats">
+      <div class="stat s1"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Total</div></div>
+      <div class="stat s2"><div class="stat-num" id="doneCount">0</div><div class="stat-label">Done</div></div>
+      <div class="stat s3"><div class="stat-num" id="pendCount">0</div><div class="stat-label">Pending</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="prog-label"><span>Today's progress</span><span id="pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <div class="input-area">
+      <input class="todo-input" id="todoInput" placeholder="Add a new task..." />
+      <button class="add-btn" id="addBtn">+ Add</button>
+    </div>
+    <div class="priority-bar">
+      <span class="p-label">Priority:</span>
+      <button class="p-btn sel-high" data-p="high">High</button>
+      <button class="p-btn" data-p="med">Medium</button>
+      <button class="p-btn" data-p="low">Low</button>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="active">Pending</button>
+      <button class="filter-btn" data-filter="done">Done</button>
+    </div>
+    <div class="todo-list" id="todoList"></div>
+  </div>
+  <script>
+    let todos = JSON.parse(localStorage.getItem('ps_todos') || '[]');
+    let filter = 'all';
+    let selPriority = 'high';
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const now = new Date();
+    document.getElementById('dateTag').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
+    const dotClass = { high: 'p-high', med: 'p-med', low: 'p-low' };
+    function save() { localStorage.setItem('ps_todos', JSON.stringify(todos)); }
+    function updateStats() {
+      const total = todos.length;
+      const done = todos.filter(t => t.done).length;
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('totalCount').textContent = total;
+      document.getElementById('doneCount').textContent = done;
+      document.getElementById('pendCount').textContent = total - done;
+      document.getElementById('pct').textContent = pct + '%';
+      document.getElementById('progFill').style.width = pct + '%';
+    }
+    function render() {
+      const list = document.getElementById('todoList');
+      const filtered = todos.filter(t => filter === 'all' ? true : filter === 'done' ? t.done : !t.done);
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty"><i class="ti ti-clipboard-list"></i><p>No tasks here. Add one above!</p></div>`;
+      } else {
+        list.innerHTML = filtered.map(t => {
+          const i = todos.indexOf(t);
+          return `<div class="todo-item ${t.done ? 'done' : ''}">
+            <div class="check-box ${t.done ? 'checked' : ''}" onclick="toggle(${i})">
+              <span class="check-icon">✓</span>
+            </div>
+            <div class="priority-dot ${dotClass[t.priority] || 'p-low'}"></div>
+            <span class="todo-text" onclick="toggle(${i})">${t.text}</span>
+            <button class="del-btn" onclick="remove(${i})">✕</button>
+          </div>`;
+        }).join('');
+      }
+      updateStats();
+    }
+    function toggle(i) { todos[i].done = !todos[i].done; save(); render(); }
+    function remove(i) { todos.splice(i, 1); save(); render(); }
+    document.querySelectorAll('.p-btn').forEach(btn => {
+      btn.onclick = () => {
+        selPriority = btn.dataset.p;
+        document.querySelectorAll('.p-btn').forEach(b => b.className = 'p-btn');
+        btn.classList.add('sel-' + selPriority);
+      };
+    });
+    document.getElementById('addBtn').onclick = () => {
+      const val = document.getElementById('todoInput').value.trim();
+      if (!val) return;
+      todos.push({ text: val, done: false, priority: selPriority });
+      document.getElementById('todoInput').value = '';
+      save(); render();
+    };
+    document.getElementById('todoInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('addBtn').click();
+    });
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.onclick = () => {
+        filter = btn.dataset.filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+      };
+    });
+    render();
+  </script>
+</body>
+</html>
