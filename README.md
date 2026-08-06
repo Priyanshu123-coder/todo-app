@@ -1,4 +1,4 @@
-# Todo App — Priyanshu Singh
+# TASK MANAGER APP — Priyanshu Singh
 
 A clean and premium todo application built with vanilla HTML, CSS, and JavaScript.
 
